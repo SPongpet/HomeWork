@@ -33,11 +33,17 @@
                     </div>
                     <div class="col-md-12" style="margin-bottom: 10px;">
                         <div class="col-md-5">
-                            <div class="bs-example" id="player" data-example-id="responsive-embed-16by9-iframe-youtube">
-                                <!-- <div class="embed-responsive embed-responsive-16by9">
-                                    <iframe id="player" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-                                </div> -->
-                            </div>
+                            <form action="/url" method="get">
+                                <div class="bs-example" id="player" data-example-id="responsive-embed-16by9-iframe-youtube">
+                                    <iframe width="400" height="250" name="getURL" id="getURL"
+                                        src='https://www.youtube.com/embed/' allowfullscreen
+                                        frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" >
+                                    </iframe>
+                                </div>
+                                <span class="input-group-btn" style="text-align: center">
+                                    <button class="btn btn-primary" type="submit">Play</button>
+                                </span>
+                            </form>
                         </div>
                         <div class="col-md-7">
                             <label>Video Queue</label>

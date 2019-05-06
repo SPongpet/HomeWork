@@ -53,7 +53,6 @@ router.get('/', function(req, res,next) {
                     }
                 }
             });
-            // onYouTubeIframeAPIReady()
             res.render('index', { 
                 title : 'Home Work',
                 data : array
@@ -63,7 +62,14 @@ router.get('/', function(req, res,next) {
 })
 
 router.get('/url', function(req, res, next) {
-    console.log('/url');
+    var queueVideoRef = db.collection("queue_video").orderBy("queue", "asc").limit(1)
+    queueVideoRef.get()
+        .then(snapshot => {
+            snapshot.forEach(doc => {
+                console.log(doc.id +" : "+ doc.data().youtube_url);
+            });
+        }).catch(next);
+    return res.redirect('/');
 })
 
 router.post('/youtubeUrl', function(req, res, next) {
@@ -75,7 +81,6 @@ router.post('/youtubeUrl', function(req, res, next) {
         return res.redirect('/');
     }else{
         fetchVideoInfo(YouTubeID).then(function (videoInfo) {
-            // console.log(videoInfo);
             db.collection('queue_video').add({
                 status : true,
                 queue : date,
@@ -89,25 +94,11 @@ router.post('/youtubeUrl', function(req, res, next) {
         }).catch(next);
     }
 })
-// function onYouTubeIframeAPIReady(req, res, next) {
-//     console.log("onYouTubeIframeAPIReady");
-//     db.collection("queue_video").orderBy("queue", "asc").limit(1)
-//     .get()
-//         .then(snapshot => {
-//             snapshot.forEach(doc => {
-//                 new YT.Player('player', {
-//                     height: '250',
-//                     width: '400',
-//                     videoId: doc.youtube_url,
-//                     events: {
-//                         'onReady': onPlayerReady,
-//                     }
-//                 });
-//             });
-//         })
-//     .catch(next);
-// }
-function onPlayerReady(event) {
-    event.target.playVideo();
+
+function onYouTubeIframeAPIReady(req, res, next) {
+    
 }
+// function onPlayerReady(event) {
+//     event.target.playVideo();
+// }
 module.exports = router
