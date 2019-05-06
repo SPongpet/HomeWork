@@ -3,8 +3,8 @@ Play video from Youtube URL
 
 # Installation
     $ npm install express
-    $ npm install body-parser
     $ npm install ip
     $ npm install youtube-info
     $ npm install youtube-id
+
     

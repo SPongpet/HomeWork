@@ -15,13 +15,12 @@
         <link rel="stylesheet" href="/public/css/style.css">
     </head>
     <body>
-        <div></div>
         <div class="container">
             <div class="jumbotron">
                 <div class="row">
                     <div class="col-md-8 col-md-offset-2" style="margin-bottom: 10px;">
                         <div class="form-group">
-                            <form method="get">
+                            <form action="/youtubeUrl" method="post">
                                 <h1 style="text-align: center">Youtube URL</h1>
                                 <div class="input-group">
                                     <input type="text" class="form-control" name="youtubeUrl" placeholder="URL">
@@ -34,52 +33,33 @@
                     </div>
                     <div class="col-md-12" style="margin-bottom: 10px;">
                         <div class="col-md-5">
-                            <div class="bs-example" data-example-id="responsive-embed-16by9-iframe-youtube">
-                                <? if(videoInfo){ ?>
-                                    <label><?= videoInfo.title ?></label>
-                                    <? } else{ ?>  
-                                    <h1 style="text-align: center">Not Found Video</h1>
-                                    <? } ?>
-                                <div class="embed-responsive embed-responsive-16by9">
-                                    <iframe width="560" height="315"
-                                        src='
-                                        <? if (videoInfo) { ?>
-                                            <?= videoInfo.embedURL ?>?autoplay=1
-                                        <? } ?>' allowfullscreen
-                                        frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" >
-                                    </iframe>
-                                    <!-- <iframe width="560" height="315" src="https://www.youtube.com/embed/4O88uUhoi_M" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe> -->
-                                </div>
+                            <div class="bs-example" id="player" data-example-id="responsive-embed-16by9-iframe-youtube">
+                                <!-- <div class="embed-responsive embed-responsive-16by9">
+                                    <iframe id="player" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                                </div> -->
                             </div>
                         </div>
                         <div class="col-md-7">
                             <label>Video Queue</label>
                             <div style="display:block; overflow:auto; height:200px; width:100%;">
                                 <table class="table table-striped">
-                                    <!-- <thead style="display: table; overflow: auto; width: 100%"> -->
                                     <thead>
                                         <tr>
-                                            <th>No.</th>
+                                            <th>Queue</th>
                                             <th>Video Name</th>
                                             <th>Username</th>
                                         </tr>
                                     </thead>
-                                    <? if (videoInfo) { ?>
+                                    <? if (data) { ?>
                                         <tbody >
-                                            <tr>
-                                                <th scope="row">1</th>
-                                                <th>    
-                                                    <? if (videoInfo) { ?>
-                                                        <?= videoInfo.title ?>
-                                                    <? } ?>
-                                                </th>
-                                                <th>
-                                                    <? if (user) { ?>
-                                                        <?= user ?>
-                                                    <? } ?>
-                                                </th>
-                                            </tr>
-                                        </tbody>
+                                            <? for(var i=0; i < data.length; i++) { ?>
+                                                <tr>
+                                                    <td><?= data[i].queue ?></td>
+                                                    <td><?= data[i].videoName ?></td>
+                                                    <td><?= data[i].user ?></td>
+                                                </tr>
+                                            <? } ?>
+                                        </tbody> 
                                     <? } ?>
                                 </table>
                             </div>
