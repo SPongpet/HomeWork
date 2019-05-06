@@ -12,8 +12,10 @@ app.set('view options', {delimiter: '?'});
 app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
 app.use(express.static(path.join(__dirname, 'public')))
- 
+
 app.use('/', indexRouter)
+app.use('/youtubeUrl', indexRouter)
+app.use('/url', indexRouter)
 
 app.listen(port, function() {
     console.log(`Example app listening on port ${port}!`)
