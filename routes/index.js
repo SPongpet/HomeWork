@@ -4,6 +4,28 @@ const fetchVideoInfo = require('youtube-info'); //ดึงข้อมูลจ
 const getYouTubeID = require('get-youtube-id'); //ดึง id ลจาก url youtube
 const dateFormat = require('dateformat');
 const firebase = require('firebase');
+const stream = require('stream');
+const youtube = require('youtube-iframe-player');
+const fs = require('fs'); 
+
+// console.log(youtube);
+// var youtubePlayer = youtube.createPlayer('container', {
+//     width: '720',
+//     height: '405',
+//     videoId: 'M7lc1UVf-VE',
+//     playerVars: { 'autoplay': 0, 'controls': 1 },
+//     events: {
+//         'onReady': playerReady,
+//         'onStateChange': onPlayerStateChange
+//     }
+// });
+// console.log(youtubePlayer);
+// function playerReady(event) {
+//     youtubePlayer.playVideo();
+// }
+// function onPlayerStateChange(event) {
+//     console.log('Player State Changed: ', event);
+// }
 
 const firebaseConfig = {
     apiKey: "AIzaSyA-4AaXj1tSr1D0QzZGjJosW22FZpikmTE",
@@ -62,14 +84,27 @@ router.get('/', function(req, res,next) {
 })
 
 router.get('/url', function(req, res, next) {
-    var queueVideoRef = db.collection("queue_video").orderBy("queue", "asc").limit(1)
+    var queueVideoRef = db.collection("queue_video").where('status', '==', true).limit(1)
+    var id = null
     queueVideoRef.get()
         .then(snapshot => {
             snapshot.forEach(doc => {
-                console.log(doc.id +" : "+ doc.data().youtube_url);
+                const ytdl = require('ytdl-core');
+                const url = doc.data().youtube_url
+                
+                id = doc.id
+                console.log("URL : "+url);
+                res.header('Content-Disposition', 'attachment; filename="video.mp4"');
+                ytdl(url, {format: 'mp4'}).pipe(res);
+                console.log("Play Video!!!!!!");
             });
         }).catch(next);
-    return res.redirect('/');
+    // var sfRef = db.collection('queue_video').doc(id);
+    // batch.update(sfRef, {status: false});
+    console.log(id);
+    if (id){
+        db.collection('queue_video').doc(id).update({status: false});
+    }
 })
 
 router.post('/youtubeUrl', function(req, res, next) {
@@ -86,7 +121,7 @@ router.post('/youtubeUrl', function(req, res, next) {
                 queue : date,
                 user : ip.address(),
                 video_name : videoInfo.title,
-                youtube_url : videoInfo.videoId
+                youtube_url : videoInfo.url
             }).then(ref => {
                 console.log('Added document with ID: ', ref.id);
             });
@@ -95,10 +130,4 @@ router.post('/youtubeUrl', function(req, res, next) {
     }
 })
 
-function onYouTubeIframeAPIReady(req, res, next) {
-    
-}
-// function onPlayerReady(event) {
-//     event.target.playVideo();
-// }
 module.exports = router
