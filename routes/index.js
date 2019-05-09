@@ -4,28 +4,9 @@ const fetchVideoInfo = require('youtube-info'); //ดึงข้อมูลจ
 const getYouTubeID = require('get-youtube-id'); //ดึง id ลจาก url youtube
 const dateFormat = require('dateformat');
 const firebase = require('firebase');
-const stream = require('stream');
-const youtube = require('youtube-iframe-player');
 const fs = require('fs'); 
-
-// console.log(youtube);
-// var youtubePlayer = youtube.createPlayer('container', {
-//     width: '720',
-//     height: '405',
-//     videoId: 'M7lc1UVf-VE',
-//     playerVars: { 'autoplay': 0, 'controls': 1 },
-//     events: {
-//         'onReady': playerReady,
-//         'onStateChange': onPlayerStateChange
-//     }
-// });
-// console.log(youtubePlayer);
-// function playerReady(event) {
-//     youtubePlayer.playVideo();
-// }
-// function onPlayerStateChange(event) {
-//     console.log('Player State Changed: ', event);
-// }
+const ytdl = require('ytdl-core');
+var async = require('async');
 
 const firebaseConfig = {
     apiKey: "AIzaSyA-4AaXj1tSr1D0QzZGjJosW22FZpikmTE",
@@ -39,6 +20,7 @@ const firebaseConfig = {
 
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
+
 
 router.use(function(err, req, res, next){
     if(err.name === 'ValidationError'){
@@ -84,28 +66,23 @@ router.get('/', function(req, res,next) {
 })
 
 router.get('/url', function(req, res, next) {
-    var queueVideoRef = db.collection("queue_video").where('status', '==', true).limit(1)
-    var id = null
+    // var queueVideoRef = db.collection("queue_video").orderBy("queue", "asc");
+    var queueVideoRef = db.collection("queue_video").orderBy("queue", "asc").limit(1);
+    console.log("GET URL !!!!");
     queueVideoRef.get()
         .then(snapshot => {
             snapshot.forEach(doc => {
-                const ytdl = require('ytdl-core');
                 const url = doc.data().youtube_url
-                
-                id = doc.id
                 console.log("URL : "+url);
                 res.header('Content-Disposition', 'attachment; filename="video.mp4"');
-                ytdl(url, {format: 'mp4'}).pipe(res);
-                console.log("Play Video!!!!!!");
+                ytdl(url, { format : 'mp4' }).pipe(res); // mp4
+                if(doc.id){
+                    db.collection("queue_video").doc(doc.id).delete()
+                }
             });
         }).catch(next);
-    // var sfRef = db.collection('queue_video').doc(id);
-    // batch.update(sfRef, {status: false});
-    console.log(id);
-    if (id){
-        db.collection('queue_video').doc(id).update({status: false});
-    }
 })
+
 
 router.post('/youtubeUrl', function(req, res, next) {
     var youtubeUrl = req.body.youtubeUrl;
