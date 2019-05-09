@@ -4,9 +4,7 @@ const fetchVideoInfo = require('youtube-info'); //ดึงข้อมูลจ
 const getYouTubeID = require('get-youtube-id'); //ดึง id ลจาก url youtube
 const dateFormat = require('dateformat');
 const firebase = require('firebase');
-const fs = require('fs'); 
 const ytdl = require('ytdl-core');
-var async = require('async');
 
 const firebaseConfig = {
     apiKey: "AIzaSyA-4AaXj1tSr1D0QzZGjJosW22FZpikmTE",
