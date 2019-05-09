@@ -6,6 +6,7 @@ Play video from Youtube URL
     $ npm install ip
     $ npm install youtube-info
     $ npm install youtube-id
-    $ npm -g install firebase-tools
+    $ npm i firebase
+    $ npm i ytdl-core
 
 
