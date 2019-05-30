@@ -34,6 +34,30 @@ router.use(function(err, req, res, next){
     return next(err);
 });
 router.get('/', function(req, res,next) {
+    res.render('index', { 
+        title : 'Play Music',
+    })
+})
+
+router.get('/url', function(req, res, next) {
+    // var queueVideoRef = db.collection("queue_video").orderBy("queue", "asc");
+    var queueVideoRef = db.collection("queue_video").orderBy("queue", "asc").limit(1);
+    console.log("GET URL !!!!");
+    queueVideoRef.get()
+        .then(snapshot => {
+            snapshot.forEach(doc => {
+                const url = doc.data().youtube_url
+                console.log("URL : "+url);
+                res.header('Content-Disposition', 'attachment; filename="video.mp4"');
+                ytdl(url, { format : 'mp4' }).pipe(res); // mp4
+                if(doc.id){
+                    db.collection("queue_video").doc(doc.id).delete()
+                }
+            });
+        }).catch(next);
+})
+
+router.get('/data', function(req, res, next) {
     var queueVideoRef = db.collection("queue_video").orderBy("queue", "asc");
     var array = [];
     queueVideoRef.get()
@@ -55,32 +79,13 @@ router.get('/', function(req, res,next) {
                     }
                 }
             });
-            res.render('index', { 
-                title : 'Home Work',
+            res.render('music_list', { 
+                title : 'Play Music',
                 data : array
             })
         })
     .catch(next);
 })
-
-router.get('/url', function(req, res, next) {
-    // var queueVideoRef = db.collection("queue_video").orderBy("queue", "asc");
-    var queueVideoRef = db.collection("queue_video").orderBy("queue", "asc").limit(1);
-    console.log("GET URL !!!!");
-    queueVideoRef.get()
-        .then(snapshot => {
-            snapshot.forEach(doc => {
-                const url = doc.data().youtube_url
-                console.log("URL : "+url);
-                res.header('Content-Disposition', 'attachment; filename="video.mp4"');
-                ytdl(url, { format : 'mp4' }).pipe(res); // mp4
-                if(doc.id){
-                    db.collection("queue_video").doc(doc.id).delete()
-                }
-            });
-        }).catch(next);
-})
-
 
 router.post('/youtubeUrl', function(req, res, next) {
     var youtubeUrl = req.body.youtubeUrl;
@@ -88,7 +93,7 @@ router.post('/youtubeUrl', function(req, res, next) {
     var ip = require('ip');
     var date = Date();
     if (YouTubeID === null){
-        return res.redirect('/');
+        res.render('index')
     }else{
         fetchVideoInfo(YouTubeID).then(function (videoInfo) {
             db.collection('queue_video').add({
@@ -100,7 +105,7 @@ router.post('/youtubeUrl', function(req, res, next) {
             }).then(ref => {
                 console.log('Added document with ID: ', ref.id);
             });
-            return res.redirect('/');
+            return res.redirect('/data');
         }).catch(next);
     }
 })

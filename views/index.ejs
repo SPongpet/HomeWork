@@ -40,6 +40,7 @@
                                         },
                                         success: function(data){
                                             $('#youtubeUrl').val("");
+                                            $('#queuePlayer').html(data);
                                         }
                                     });
                                 });
@@ -48,62 +49,61 @@
                     </div>
                     <div class="col-md-8 col-md-offset-2" style="margin-bottom: 10px; text-align: center">
                         <div class="bs-example" id="player" data-example-id="responsive-embed-16by9-iframe-youtube">
-                            <? if (data) { ?>
-                                <video id="videoPlayer" style="width: 100%;height: 400px;" playsinline controls autoplay>
-                                    <source src="http://localhost:3000/url" type="video/mp4">
-                                </video>
-                            <? }else{ ?>
-                                <h1 style="text-align: center;">Not Found Video</h1>
-                            <? } ?>
+                            <video id="videoPlayer" style="width: 100%;height: 400px;" playsinline controls autoplay>
+                                <source src="http://localhost:3000/url" type="video/mp4">
+                            </video>
                         </div>
+                        <script>
+                            var vid = document.getElementById("videoPlayer");
+                            var request = new XMLHttpRequest()
+                            vid.onended = function() {
+                                // window.location.reload()
+                                $.ajax({
+                                    type: 'get',
+                                    url: 'http://localhost:3000/url',
+                                    success: function(data){
+                                        $("#videoPlayer")[0].play();
+                                        $.ajax({
+                                            type: 'GET',
+                                            url: 'http://localhost:3000/data',
+                                            success: function(data){
+                                                $('#queuePlayer').html(data);
+                                            }
+                                        });
+                                    }
+                                });
+                            };
+                        </script>
+                        <button type="button" id="nextVideo" class="btn btn-info">
+                            <span class="glyphicon glyphicon-forward"></span>
+                        </button>
                     </div>
                     <div class="col-md-10 col-md-offset-1" id="queuePlayer" style="margin-bottom: 10px;">
-                        <h3 style="text-align: center;">Video Queue</h3>
-                        <div style="display:block; overflow:auto; height:200px; width:100%;">
-                            <table class="table table-striped">
-                                <thead>
-                                    <tr>
-                                        <th>Queue</th>
-                                        <th>Date</th>
-                                        <th>Video Name</th>
-                                        <th>Username</th>
-                                        <th></th>
-                                    </tr>
-                                </thead>
-                                <? if (data) { ?>
-                                    <tbody >
-                                        <? for(var i=0; i < data.length; i++) { ?>
-                                            <tr>
-                                                <td><?= i+1 ?></td>
-                                                <td><?= data[i].queue ?></td>
-                                                <td><?= data[i].videoName ?></td>
-                                                <td><?= data[i].user ?></td>
-                                                <? if (i == 0) { ?>
-                                                    <td><span class="glyphicon glyphicon-volume-up" aria-hidden="true" style="color: green"></span></td>
-                                                <? }?>
-                                            </tr>
-                                        <? } ?>
-                                    </tbody> 
-                                <? } ?>
-                            </table>
-                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </body>
     <script>
-        var vid = document.getElementById("videoPlayer");
-        var request = new XMLHttpRequest()
-        vid.onended = function() {
-            window.location.reload()
-            // $.ajax({
-            //     type: 'get',
-            //     url: 'http://localhost:3000/url',
-            //     success: function(data){
-            //         $("#videoPlayer")[0].play();
-            //     }
-            // });
-        };
+        $( document ).ready(function(){
+            $.ajax({
+                type: 'GET',
+                url: 'http://localhost:3000/data',
+                success: function(data){
+                    $('#queuePlayer').html(data);
+                }
+            });
+            $( "#nextVideo" ).click(function() {
+                $.ajax({
+                    type: 'get',
+                    url: 'http://localhost:3000/',
+                    success: function(data){
+                        window.location.reload()
+                    }
+                });
+            });
+        });
+
+        
     </script>
 </html>

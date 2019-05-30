@@ -19,6 +19,7 @@ app.use(express.static(path.join(__dirname, 'public')))
 app.use('/', indexRouter)
 app.use('/youtubeUrl', indexRouter)
 app.use('/url', indexRouter)
+app.use('/data', indexRouter)
 
 app.listen(port, function() {
     console.log(`Example app listening on port ${port}!`)
