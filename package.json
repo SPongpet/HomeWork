@@ -20,7 +20,7 @@
     "discord.js": "github:discordjs/discord.js",
     "discord.js-commando": "^0.10.0",
     "ejs": "^2.6.1",
-    "express": "^4.16.4",
+    "express": "^4.17.3",
     "express-session": "^1.16.1",
     "firebase": "^5.11.1",
     "firebase-admin": "^7.3.0",
